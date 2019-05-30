@@ -1,0 +1,21 @@
+cluster.name: "cluster_elk"
+node.name: "elasticdata2"
+network.host: 0.0.0.0
+http.port: 9203
+discovery.zen.ping.unicast.hosts: ["elasticmaster1","elasticcoord1","elasticdata1","elasticdata2"]
+node.master : false
+node.data : true
+node.ingest: false
+node.ml: false
+path.repo: ["/usr/share/elasticsearch/elkbackup"]
+
+xpack.ml.enabled: false
+xpack.graph.enabled: false
+xpack.security.enabled: false
+xpack.watcher.enabled: false
+xpack.monitoring.enabled: false
+
+search.remote.connect: true
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+http.cors.allow-headers: "Authorization"

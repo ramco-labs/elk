@@ -1,0 +1,5 @@
+server.name: kibana
+server.host: '0.0.0.0'
+server.basePath: "/kibana"
+elasticsearch.hosts: http://elasticcoord1:9201
+xpack.security.enabled: false

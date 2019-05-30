@@ -1,0 +1,152 @@
+version: '3'
+services:
+  elasticmaster1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticmaster1
+    restart: unless-stopped
+    environment:      
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticmaster1:/usr/share/elasticsearch/data
+      - ./elasticmaster1.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 3g
+        reservations:
+          cpus: '0.10'
+          memory: 50M
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - esnet
+  elasticcoord1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticcoord1
+    restart: unless-stopped
+    environment:      
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true     
+    volumes:
+      - elasticcoord1:/usr/share/elasticsearch/data
+      - ./elasticcoord1.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9201:9201     
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 3g
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - esnet   
+  elasticdata1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticdata1
+    environment:     
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true     
+    volumes:
+      - elasticdata1:/usr/share/elasticsearch/data
+      - ./elasticdata1.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9202:9202     
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 3g
+        reservations:
+          memory: 50M
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - esnet  
+  elasticdata2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticdata2
+    environment:      
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true     
+    volumes:
+      - elasticdata2:/usr/share/elasticsearch/data
+      - ./elasticdata2.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9203:9203      
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 3g
+        reservations:
+          memory: 50M
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - esnet         
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.6.1
+    depends_on:
+      - elasticmaster1
+      - elasticcoord1
+      - elasticdata1
+      - elasticdata2
+    container_name: kibana
+    environment:
+      - SERVER_HOST=0.0.0.0      
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 3g
+        reservations:
+          memory: 50M
+    networks:
+      - esnet
+networks:
+  esnet:    
+volumes:
+  elasticmaster1:
+    driver: local
+  elasticcoord1:
+    driver: local
+  elasticdata1:
+    driver: local
+  elasticdata2:
+    driver: local
